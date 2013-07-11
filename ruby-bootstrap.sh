@@ -137,8 +137,8 @@ if [ -z $DESIRED_RUBY_VERSION ]; then
   puts "Installing latest stable Ruby version locally via rvm..."
   rvm install ruby
 else
-  rvm install $DESIRED_RUBY_VERSION
   success "OK"
+  rvm install $DESIRED_RUBY_VERSION
 fi
 
 ###
