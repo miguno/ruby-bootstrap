@@ -3,7 +3,7 @@ ruby-bootstrap
 
 This script bootstraps rvm, Ruby, bundler and any defined Ruby gems in a Ruby project directory.
 
-Tested on RHEL/CentOS 6 and Bash shell.
+Tested with Bash shell on RHEL/CentOS 6 and Mac OS X 10.8.
 
 # Requirements
 
