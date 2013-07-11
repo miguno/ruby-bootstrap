@@ -3,7 +3,7 @@
 This script bootstraps [rvm](https://rvm.io/), [Ruby](http://www.ruby-lang.org/en/), [bundler](http://bundler.io/) and
 any defined gems in a Ruby project directory.
 
-Tested with Bash shell on RHEL/CentOS 6 and Mac OS X 10.8.
+Tested with Bash shell on RHEL/CentOS 6, Mac OS X 10.8 and Amazon Linux AMI images (on AWS/EC2).
 
 
 ## Usage
