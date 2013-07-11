@@ -4,7 +4,7 @@
 # Description:  This script bootstraps rvm, Ruby, bundler and any defined Ruby gems in a Ruby project directory.
 # Homepage:     https://github.com/miguno/ruby-bootstrap
 #
-# Tested on RHEL/CentOS 6 and Bash shell.
+# Tested with Bash shell on RHEL/CentOS 6 and Mac OS X 10.8.
 
 RVM_FRESH_INSTALL=0 # 0=false, 1=true
 
