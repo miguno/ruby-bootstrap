@@ -30,11 +30,19 @@ case `uname` in
 esac
 
 # Colors for shell output
-red='\e[1;31m'
-green='\e[1;32m'
-yellow='\e[1;33m'
-blue='\e[1;34m'
-nocolor='\e[0m'
+if [ "$OS" = "$OS_MAC" ]; then
+  red='\x1B[1;31m'
+  green='\x1B[1;32m'
+  yellow='\x1B[1;33m'
+  blue='\x1B[1;34m'
+  nocolor='\x1B[0m'
+else
+  red='\e[1;31m'
+  green='\e[1;32m'
+  yellow='\e[1;33m'
+  blue='\e[1;34m'
+  nocolor='\e[0m'
+fi
 
 function puts() {
   local opts=''
