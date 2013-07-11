@@ -5,8 +5,6 @@
 #
 # Tested on RHEL/CentOS 6 and Bash shell.
 
-MYSELF=`which $0`
-MYDIR=`dirname $0`
 RVM_FRESH_INSTALL=0 # 0=false, 1=true
 
 ###
@@ -103,37 +101,44 @@ fi
 ###
 ### Ruby bootstrap
 ###
-function detect_installed_ruby_version() {
-  local ruby_version=`ruby --version 2>/dev/null | awk '{ print \$2 }' | sed -rn 's/^([[:digit:]](\.[[:digit:]])+)(p.+)?$/\1-\3/p' | sed 's/-$//'`
-  echo $ruby_version
+function find_ruby_version_file() {
+  local filename=".ruby-version"
+  local curr_dir=$1
+  curr_dir=`cd "$curr_dir"; pwd`
+  local candidate_file="$curr_dir/$filename"
+  while [ ! -f "$candidate_file" ]; do
+    parent_dir=`cd ..; pwd`
+    if [ "$parent_dir" = "$curr_dir" ]; then
+      # We have reached /, we can't go up any further.
+      candidate_file=""
+      break
+    else
+      curr_dir="$parent_dir"
+      candidate_file="$curr_dir/$filename"
+    fi
+  done
+  echo $candidate_file
 }
 
 function detect_desired_ruby_version() {
-  ruby_version_file=$MYDIR/.ruby-version
-  DESIRED_RUBY_VERSION=`head -n 1 $ruby_version_file`
-  echo $DESIRED_RUBY_VERSION
+  local desired_ruby_version=""
+  ruby_version_file=`find_ruby_version_file $(pwd)`
+  if [ -n "$ruby_version_file" ]; then
+    desired_ruby_version=`head -n 1 $ruby_version_file`
+  fi
+  echo $desired_ruby_version
 }
 
-function install_ruby() {
-  version=$1
-  puts "Installing Ruby locally via rvm: "
-  rvm install $version
-}
-
-puts -n "Checking for Ruby: "
-INSTALLED_RUBY_VERSION=`detect_installed_ruby_version`
+puts -n "Detecting desired Ruby version: "
 DESIRED_RUBY_VERSION=`detect_desired_ruby_version`
-if [ -z $INSTALLED_RUBY_VERSION ]; then
-  error "NOT INSTALLED"
-  install_ruby $DESIRED_RUBY_VERSION
-elif [ $INSTALLED_RUBY_VERSION != $DESIRED_RUBY_VERSION ]; then
-  warn -n "INCORRECT VERSION"
-  puts " ($INSTALLED_RUBY_VERSION but we need $DESIRED_RUBY_VERSION)"
-  install_ruby $DESIRED_RUBY_VERSION
+if [ -z $DESIRED_RUBY_VERSION ]; then
+  warn "FAILED (could not find .ruby-version)"
+  puts "Installing latest stable Ruby version locally via rvm..."
+  rvm install ruby
 else
+  rvm install $DESIRED_RUBY_VERSION
   success "OK"
 fi
-
 
 ###
 ### bundler bootstrap
@@ -147,7 +152,7 @@ else
   success "OK"
 fi
 
-# Install gems
+# Install gems (if any)
 bundle install
 
 
