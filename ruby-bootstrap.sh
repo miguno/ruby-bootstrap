@@ -92,8 +92,8 @@ which rvm &>/dev/null
 if [ $? -ne 0 ]; then
   error "NOT INSTALLED"
   puts "Installing latest stable version of rvm..."
-  curl -L https://get.rvm.io | bash -s stable --ruby --autolibs=enable --ignore-dotfiles
   RVM_FRESH_INSTALL=1
+  curl -L https://get.rvm.io | bash -s stable --ruby --autolibs=enable --ignore-dotfiles || exit 1
 else
   success "OK"
 fi
@@ -138,10 +138,10 @@ DESIRED_RUBY_VERSION=`detect_desired_ruby_version`
 if [ -z $DESIRED_RUBY_VERSION ]; then
   warn "FAILED (could not find .ruby-version)"
   puts "Installing latest stable Ruby version locally via rvm..."
-  rvm install ruby
+  rvm install ruby || exit 2
 else
   success "OK"
-  rvm install $DESIRED_RUBY_VERSION
+  rvm install $DESIRED_RUBY_VERSION || exit 3
 fi
 
 ###
@@ -151,14 +151,14 @@ puts -n "Checking for bundler: "
 if [ $? -ne 0 ]; then
   error "NOT INSTALLED"
   puts "Installing bundler locally via rvm..."
-  gem install bundler
+  gem install bundler || exit 4
 else
   success "OK"
 fi
 
 # Install gems
 puts "Installing gems (if any)"
-bundle install
+bundle install || exit 5
 
 
 ###
