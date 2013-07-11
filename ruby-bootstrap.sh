@@ -186,3 +186,5 @@ if [ $RVM_FRESH_INSTALL -eq 1 ]; then
   warn "That's it!  Sorry for the extra work but this is the safest"
   warn "way to update your environment without breaking anything."
 fi
+
+puts "Thanks for using ruby-bootstrap.  Happy hacking!"
