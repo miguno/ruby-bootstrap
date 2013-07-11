@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # File:         ruby-bootstrap.sh
-# Description:  This script bootstraps rvm, Ruby, bundler and any defined Ruby gems in a Ruby project directory.
+# Description:  This script bootstraps rvm, Ruby, bundler and any defined gems in a Ruby project directory.
 # Homepage:     https://github.com/miguno/ruby-bootstrap
 #
 # Tested with Bash shell on RHEL/CentOS 6 and Mac OS X 10.8.
