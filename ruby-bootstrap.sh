@@ -153,7 +153,8 @@ else
   success "OK"
 fi
 
-# Install gems (if any)
+# Install gems
+puts "Installing gems (if any)"
 bundle install
 
 
