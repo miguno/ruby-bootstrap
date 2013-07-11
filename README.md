@@ -15,6 +15,14 @@ Tested with Bash shell on RHEL/CentOS 6 and Mac OS X 10.8.
 
 ## FAQ
 
+### Detect desired Ruby version?
+
+The script tries to find `.ruby-version` in the current directory.  If there is none, it recursively traverses from
+the current directory to its parent directories and picks the first match.  For example, if you run the script from
+the directory `foo/bar/quux/` then `foo/bar/quux/.ruby-version` would be picked before `foo/bar/.ruby-version`, which
+in turn would be picked before `foo/.ruby-version` and so on.  This behavior matches rvm's.
+
+
 ### Error: import read failed (EPEL gpg key)?
 
 Problem:
