@@ -9,8 +9,6 @@ Tested with Bash shell on RHEL/CentOS 6 and Mac OS X 10.8.
 
     $ curl -L https://raw.github.com/miguno/ruby-bootstrap/master/ruby-bootstrap.sh | bash -s
 
-Screenshot:
-
 ![Using ruby-bootstrap](images/ruby-bootstrap-1000px.png?raw=true)
 
 
