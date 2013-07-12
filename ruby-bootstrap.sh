@@ -82,26 +82,32 @@ function success() {
   msg="$@"
   echo -e $opts "${green}${msg}${nocolor}"
 }
+function rvm_post_install_message() {
+  warn "Important: We performed a fresh install of rvm for you."
+  warn "           This means you manually perform two tasks now."
+  warn
+  warn "Task 1 of 2:"
+  warn "------------"
+  warn "Please run the following command in all your open shell windows to"
+  warn "start using rvm.  In rare cases you need to reopen all shell windows."
+  warn
+  warn "    source ~/.rvm/scripts/rvm"
+  warn
+  warn
+  warn "Task 2 of 2:"
+  warn "------------"
+  warn "Permanently update your shell environment to source/add rvm."
+  warn "The example below shows how to do this for Bash."
+  warn
+  warn "Add the following two lines to your ~/.bashrc:"
+  warn
+  warn "    PATH=\$PATH:\$HOME/.rvm/bin # Add RVM to PATH for scripting"
+  warn "    [[ -s \"\$HOME/.rvm/scripts/rvm\" ]] && source \"\$HOME/.rvm/scripts/rvm\" # Load RVM into a shell session *as a function*"
+  warn
+  warn "That's it!  Sorry for the extra work but this is the safest"
+  warn "way to update your environment without breaking anything."
+}
 
-
-###
-### rvm bootstrap
-###
-puts -n "Checking for rvm: "
-which rvm &>/dev/null
-if [ $? -ne 0 ]; then
-  error "NOT INSTALLED"
-  puts "Installing latest stable version of rvm..."
-  RVM_FRESH_INSTALL=1
-  curl -L https://get.rvm.io | bash -s stable --ruby --autolibs=enable --ignore-dotfiles || exit 1
-else
-  success "OK"
-fi
-
-
-###
-### Ruby bootstrap
-###
 function find_ruby_version_file() {
   local filename=".ruby-version"
   local curr_dir=$1
@@ -130,61 +136,70 @@ function detect_desired_ruby_version() {
   echo $desired_ruby_version
 }
 
+# We must detect the desired Ruby version before rvm "manipulates" the shell environment for its own purposes.
+# I assume the cause of the problem is rvm's variant of the 'cd' command (~/.rvm/scripts/cd), which may alter the
+# normal behavior of 'cd' in a way that breaks our usage of 'cd' in the function 'find_ruby_version_file' above.
 puts -n "Detecting desired Ruby version: "
-DESIRED_RUBY_VERSION=`detect_desired_ruby_version`
-if [ -z $DESIRED_RUBY_VERSION ]; then
-  warn "FAILED (could not find .ruby-version)"
-  puts "Installing latest stable Ruby version locally via rvm..."
-  rvm install ruby || exit 3
+RUBY_VERSION=`detect_desired_ruby_version`
+if [ -z "$RUBY_VERSION" ]; then
+  warn "FAILED (could not find .ruby-version) -- falling back to latest stable Ruby version"
+  RUBY_VERSION="ruby" # 'ruby' defaults to latest stable version
 else
-  success "OK"
-  rvm install $DESIRED_RUBY_VERSION || exit 4
+  success "OK ($RUBY_VERSION)"
 fi
 
+
 ###
-### bundler bootstrap
+### Bootstrap RVM
 ###
-puts -n "Checking for bundler: "
+
+puts -n "Checking for rvm: "
+which rvm &>/dev/null
 if [ $? -ne 0 ]; then
-  error "NOT INSTALLED"
-  puts "Installing bundler locally via rvm..."
-  gem install bundler || exit 5
+  error "NOT FOUND (If you already ran ruby-bootstrap: have you performed the post-installation steps?)"
+  puts "Installing latest stable version of rvm..."
+  RVM_FRESH_INSTALL=1
+  curl -L https://get.rvm.io | bash -s stable --autolibs=enable --ignore-dotfiles || exit 1
 else
   success "OK"
 fi
 
-# Install gems
+if [ -d ~/.rvm/bin ]; then
+  PATH=$PATH:~/.rvm/bin
+fi
+source ~/.rvm/scripts/rvm
+
+
+###
+### Install Ruby
+###
+puts "Installing Ruby version ${RUBY_VERSION}..."
+rvm install $RUBY_VERSION
+if [ $? -ne 0 -a $RVM_FRESH_INSTALL -eq 1 ]; then
+  rvm_post_install_message
+  exit 2
+fi
+
+
+###
+### Install Bundler
+###
+puts "Installing bundler..."
+gem install bundler
+if [ $? -ne 0 -a $RVM_FRESH_INSTALL -eq 1 ]; then
+  rvm_post_install_message
+  exit 3
+fi
+
+
+###
+### Install gems
+###
 puts "Installing gems (if any)"
-bundle install || exit 6
-
-
-###
-### post install
-###
-if [ $RVM_FRESH_INSTALL -eq 1 ]; then
-  warn "Important: We performed a fresh install of rvm for you."
-  warn "           This means you manually perform two tasks now."
-  warn
-  warn "Task 1 of 2:"
-  warn "------------"
-  warn "Please run the following command in all your open shell windows to"
-  warn "start using rvm.  In rare cases you need to reopen all shell windows."
-  warn
-  warn "    source ~/.rvm/scripts/rvm"
-  warn
-  warn
-  warn "Task 2 of 2:"
-  warn "------------"
-  warn "Permanently update your shell environment to source/add rvm."
-  warn "The example below shows how to do this for Bash."
-  warn
-  warn "Add the following two lines to your ~/.bashrc:"
-  warn
-  warn "    PATH=\$PATH:\$HOME/.rvm/bin # Add RVM to PATH for scripting"
-  warn "    [[ -s \"\$HOME/.rvm/scripts/rvm\" ]] && source \"\$HOME/.rvm/scripts/rvm\" # Load RVM into a shell session *as a function*"
-  warn
-  warn "That's it!  Sorry for the extra work but this is the safest"
-  warn "way to update your environment without breaking anything."
+bundle install
+if [ $? -ne 0 -a $RVM_FRESH_INSTALL -eq 1 ]; then
+  rvm_post_install_message
+  exit 4
 fi
 
 puts "Thanks for using ruby-bootstrap.  Happy hacking!"
