@@ -98,9 +98,6 @@ else
   success "OK"
 fi
 
-# In most cases source'ing rvm in this script is not required but there have been exceptions.
-source ~/.rvm/scripts/rvm || exit 2
-
 
 ###
 ### Ruby bootstrap
