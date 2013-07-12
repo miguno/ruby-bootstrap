@@ -99,7 +99,7 @@ else
 fi
 
 # In most cases source'ing rvm in this script is not required but there have been exceptions.
-source ~/.rvm/scripts/rvm
+source ~/.rvm/scripts/rvm || exit 2
 
 
 ###
@@ -138,10 +138,10 @@ DESIRED_RUBY_VERSION=`detect_desired_ruby_version`
 if [ -z $DESIRED_RUBY_VERSION ]; then
   warn "FAILED (could not find .ruby-version)"
   puts "Installing latest stable Ruby version locally via rvm..."
-  rvm install ruby || exit 2
+  rvm install ruby || exit 3
 else
   success "OK"
-  rvm install $DESIRED_RUBY_VERSION || exit 3
+  rvm install $DESIRED_RUBY_VERSION || exit 4
 fi
 
 ###
@@ -151,14 +151,14 @@ puts -n "Checking for bundler: "
 if [ $? -ne 0 ]; then
   error "NOT INSTALLED"
   puts "Installing bundler locally via rvm..."
-  gem install bundler || exit 4
+  gem install bundler || exit 5
 else
   success "OK"
 fi
 
 # Install gems
 puts "Installing gems (if any)"
-bundle install || exit 5
+bundle install || exit 6
 
 
 ###
