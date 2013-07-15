@@ -45,3 +45,5 @@ Fix:
 Copyright © 2013 Michael G. Noll
 
 See [LICENSE](LICENSE) for licensing information.
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/971079f91a6f0160cfc9db28e3c59023 "githalytics.com")](http://githalytics.com/miguno/ruby-bootstrap)
