@@ -8,6 +8,7 @@
 
 RVM_FRESH_INSTALL=0 # 0=false, 1=true
 
+
 ###
 ### Helper variables and functions
 ###
@@ -82,6 +83,7 @@ function success() {
   msg="$@"
   echo -e $opts "${green}${msg}${nocolor}"
 }
+
 function rvm_post_install_message() {
   warn "Important: We performed a fresh install of rvm for you."
   warn "           This means you manually perform two tasks now."
@@ -152,7 +154,6 @@ fi
 ###
 ### Bootstrap RVM
 ###
-
 puts -n "Checking for rvm: "
 which rvm &>/dev/null
 if [ $? -ne 0 ]; then
